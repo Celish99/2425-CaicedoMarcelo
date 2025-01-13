@@ -1,0 +1,103 @@
+# Directorio: EjemplosMundoReal_POO
+
+# archivo: producto.py
+
+class Producto:
+    """
+    Clase Producto: Representa un producto en una tienda online.
+    """
+    def __init__(self, nombre: str, precio: float, stock: int):
+        self.nombre = nombre  # Atributo: Nombre del producto
+        self.precio = precio  # Atributo: Precio del producto
+        self.stock = stock    # Atributo: Cantidad en stock
+
+    def vender(self, cantidad: int) -> bool:
+        """
+        Método para realizar una venta.
+        Devuelve True si la venta es exitosa, False si no hay suficiente stock.
+        """
+        if self.stock >= cantidad:
+            self.stock -= cantidad
+            print(f"Venta exitosa de {cantidad} unidades de {self.nombre}.")
+            return True
+        else:
+            print(f"No hay suficiente stock de {self.nombre}.")
+            return False
+
+    def reponer_stock(self, cantidad: int):
+        """
+        Método para reponer el stock del producto.
+        """
+        self.stock += cantidad
+        print(f"Se ha repuesto el stock de {self.nombre}. Ahora hay {self.stock} unidades.")
+
+    def __str__(self) -> str:
+        return f"Producto: {self.nombre}, Precio: {self.precio}€, Stock: {self.stock} unidades."
+
+# archivo: tienda.py
+
+class Tienda:
+    """
+    Clase Tienda: Representa una tienda online que gestiona productos.
+    """
+    def __init__(self, nombre: str):
+        self.nombre = nombre  # Nombre de la tienda
+        self.productos = []    # Lista de productos en la tienda
+
+    def agregar_producto(self, producto: Producto):
+        """
+        Agrega un producto a la tienda.
+        """
+        self.productos.append(producto)
+        print(f"{producto.nombre} ha sido añadido a la tienda {self.nombre}.")
+
+    def mostrar_catalogo(self):
+        """
+        Muestra el catálogo de productos disponibles en la tienda.
+        """
+        print(f"Catálogo de {self.nombre}:")
+        for producto in self.productos:
+            print(producto)
+
+    def realizar_venta(self, nombre_producto: str, cantidad: int) -> bool:
+        """
+        Realiza una venta de un producto específico.
+        """
+        for producto in self.productos:
+            if producto.nombre == nombre_producto:
+                return producto.vender(cantidad)
+        print(f"Producto {nombre_producto} no encontrado.")
+        return False
+
+# archivo: main.py
+
+from tienda import Tienda
+from producto import Producto
+
+# Crear una tienda
+mi_tienda = Tienda("Tienda Online Ejemplo")
+
+# Crear productos
+producto1 = Producto("Laptop", 800.0, 10)
+producto2 = Producto("Ratón", 20.0, 50)
+producto3 = Producto("Teclado", 30.0, 30)
+
+# Agregar productos a la tienda
+mi_tienda.agregar_producto(producto1)
+mi_tienda.agregar_producto(producto2)
+mi_tienda.agregar_producto(producto3)
+
+# Mostrar catálogo
+mi_tienda.mostrar_catalogo()
+
+# Realizar una venta
+mi_tienda.realizar_venta("Laptop", 1)
+
+# Mostrar catálogo después de la venta
+mi_tienda.mostrar_catalogo()
+
+# Reponer stock
+producto1.reponer_stock(5)
+
+# Mostrar catálogo después de reponer stock
+mi_tienda.mostrar_catalogo()
