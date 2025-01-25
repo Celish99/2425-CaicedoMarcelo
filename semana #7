@@ -1,0 +1,39 @@
+class DatabaseConnection:
+    def __init__(self, db_name):
+        """Constructor: Inicializa la conexión a la base de datos."""
+        self.db_name = db_name
+        self.connected = False
+        print(f"[Marcelo] Inicializando la conexión a la base de datos: {self.db_name}")
+        self.connect()
+
+    def connect(self):
+        """Simula la conexión a la base de datos."""
+        self.connected = True
+        print(f"[Marcelo] Conectado a {self.db_name} exitosamente.")
+
+    def query(self, sql):
+        """Simula la ejecución de una consulta."""
+        if self.connected:
+            print(f"[Marcelo] Ejecutando consulta en {self.db_name}: {sql}")
+        else:
+            print("[Marcelo] Error: No hay una conexión activa.")
+
+    def __del__(self):
+        """Destructor: Limpia los recursos."""
+        if self.connected:
+            print(f"[Marcelo] Cerrando la conexión a {self.db_name}...")
+            self.connected = False
+        print(f"[Marcelo] Adiós, ¡gracias por usar esta clase! Los recursos han sido liberados.")
+
+
+# Uso de la clase
+if __name__ == "__main__":
+    print("Este código fue creado especialmente para Marcelo. ¡Disfrútalo!")
+    db = DatabaseConnection("mi_base_de_datos")
+
+    # Ejecutar una consulta
+    db.query("SELECT * FROM tabla_ejemplo")
+
+    # El objeto se elimina cuando sale del alcance o manualmente con del
+    del db
+    print("El programa continúa...")
