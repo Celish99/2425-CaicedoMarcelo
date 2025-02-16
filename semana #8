@@ -1,0 +1,137 @@
+class Producto:
+    def __init__(self, id_producto, nombre, cantidad, precio):
+        self.id_producto = id_producto
+        self.nombre = nombre
+        self.cantidad = cantidad
+        self.precio = precio
+
+    # Getters
+    def get_id(self):
+        return self.id_producto
+
+    def get_nombre(self):
+        return self.nombre
+
+    def get_cantidad(self):
+        return self.cantidad
+
+    def get_precio(self):
+        return self.precio
+
+    # Setters
+    def set_cantidad(self, cantidad):
+        self.cantidad = cantidad
+
+    def set_precio(self, precio):
+        self.precio = precio
+
+
+class Inventario:
+    def __init__(self):
+        self.productos = []
+
+    def añadir_producto(self, producto):
+        # Verificar si el ID ya existe
+        for p in self.productos:
+            if p.get_id() == producto.get_id():
+                print("Error: El ID del producto ya existe.")
+                return
+        self.productos.append(producto)
+        print(f"Producto {producto.get_nombre()} añadido con éxito.")
+
+    def eliminar_producto(self, id_producto):
+        for p in self.productos:
+            if p.get_id() == id_producto:
+                self.productos.remove(p)
+                print(f"Producto con ID {id_producto} eliminado con éxito.")
+                return
+        print(f"Producto con ID {id_producto} no encontrado.")
+
+    def actualizar_producto(self, id_producto, cantidad=None, precio=None):
+        for p in self.productos:
+            if p.get_id() == id_producto:
+                if cantidad is not None:
+                    p.set_cantidad(cantidad)
+                if precio is not None:
+                    p.set_precio(precio)
+                print(f"Producto con ID {id_producto} actualizado.")
+                return
+        print(f"Producto con ID {id_producto} no encontrado.")
+
+    def buscar_producto(self, nombre):
+        encontrados = [p for p in self.productos if nombre.lower() in p.get_nombre().lower()]
+        if encontrados:
+            for p in encontrados:
+                print(f"ID: {p.get_id()} - Nombre: {p.get_nombre()} - Cantidad: {p.get_cantidad()} - Precio: ${p.get_precio()}")
+        else:
+            print("No se encontraron productos con ese nombre.")
+
+    def mostrar_productos(self):
+        if not self.productos:
+            print("No hay productos en el inventario.")
+        else:
+            for p in self.productos:
+                print(f"ID: {p.get_id()} - Nombre: {p.get_nombre()} - Cantidad: {p.get_cantidad()} - Precio: ${p.get_precio()}")
+
+
+def menu():
+    inventario = Inventario()
+
+    while True:
+        print("\n=== Menú de Inventario ===")
+        print("1. Añadir producto")
+        print("2. Eliminar producto")
+        print("3. Actualizar producto")
+        print("4. Buscar producto")
+        print("5. Mostrar todos los productos")
+        print("6. Salir")
+
+        opcion = input("Elija una opción (1-6): ")
+
+        if opcion == '1':
+            try:
+                id_producto = int(input("Ingrese ID del producto: "))
+                nombre = input("Ingrese nombre del producto: ")
+                cantidad = int(input("Ingrese cantidad del producto: "))
+                precio = float(input("Ingrese precio del producto: $"))
+                producto = Producto(id_producto, nombre, cantidad, precio)
+                inventario.añadir_producto(producto)
+            except ValueError:
+                print("Error: Ingrese valores válidos.")
+
+        elif opcion == '2':
+            try:
+                id_producto = int(input("Ingrese ID del producto a eliminar: "))
+                inventario.eliminar_producto(id_producto)
+            except ValueError:
+                print("Error: Ingrese un ID válido.")
+
+        elif opcion == '3':
+            try:
+                id_producto = int(input("Ingrese ID del producto a actualizar: "))
+                cantidad = input("Ingrese nueva cantidad (deje vacío si no desea cambiar): ")
+                precio = input("Ingrese nuevo precio (deje vacío si no desea cambiar): ")
+
+                cantidad = int(cantidad) if cantidad else None
+                precio = float(precio) if precio else None
+                inventario.actualizar_producto(id_producto, cantidad, precio)
+            except ValueError:
+                print("Error: Ingrese valores válidos.")
+
+        elif opcion == '4':
+            nombre = input("Ingrese nombre del producto a buscar: ")
+            inventario.buscar_producto(nombre)
+
+        elif opcion == '5':
+            inventario.mostrar_productos()
+
+        elif opcion == '6':
+            print("Saliendo del sistema...")
+            break
+
+        else:
+            print("Opción no válida, intente nuevamente.")
+
+
+if __name__ == "__main__":
+    menu()
