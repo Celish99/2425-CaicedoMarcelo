@@ -1,0 +1,126 @@
+class Libro:
+    def __init__(self, titulo, autor, categoria, isbn):
+        self.info = (autor, titulo)  # Tupla inmutable con autor y título
+        self.categoria = categoria
+        self.isbn = isbn
+
+    def __str__(self):
+        return f"{self.info[1]} por {self.info[0]} (ISBN: {self.isbn}, Categoría: {self.categoria})"
+
+
+class Usuario:
+    def __init__(self, nombre, user_id):
+        self.nombre = nombre
+        self.user_id = user_id  # ID único
+        self.libros_prestados = []  # Lista de libros prestados
+
+    def __str__(self):
+        return f"Usuario: {self.nombre} (ID: {self.user_id})"
+
+
+class Biblioteca:
+    def __init__(self):
+        self.libros_disponibles = {}  # Diccionario con ISBN como clave y objeto Libro como valor
+        self.usuarios_registrados = set()  # Conjunto de IDs únicos de usuarios
+        self.historial_prestamos = {}  # Diccionario de usuarios y sus libros prestados
+
+    def agregar_libro(self, libro):
+        if libro.isbn not in self.libros_disponibles:
+            self.libros_disponibles[libro.isbn] = libro
+            print(f"Libro agregado: {libro}")
+        else:
+            print("El libro ya está en la biblioteca.")
+
+    def eliminar_libro(self, isbn):
+        if isbn in self.libros_disponibles:
+            del self.libros_disponibles[isbn]
+            print(f"Libro con ISBN {isbn} eliminado de la biblioteca.")
+        else:
+            print("El libro no se encuentra en la biblioteca.")
+
+    def registrar_usuario(self, usuario):
+        if usuario.user_id not in self.usuarios_registrados:
+            self.usuarios_registrados.add(usuario.user_id)
+            self.historial_prestamos[usuario.user_id] = []
+            print(f"Usuario registrado: {usuario}")
+        else:
+            print("El usuario ya está registrado.")
+
+    def dar_de_baja_usuario(self, user_id):
+        if user_id in self.usuarios_registrados:
+            if not self.historial_prestamos[user_id]:  # Verifica que no tenga libros prestados
+                self.usuarios_registrados.remove(user_id)
+                del self.historial_prestamos[user_id]
+                print(f"Usuario con ID {user_id} eliminado.")
+            else:
+                print("No se puede eliminar, el usuario tiene libros prestados.")
+        else:
+            print("El usuario no está registrado.")
+
+    def prestar_libro(self, user_id, isbn):
+        if user_id in self.usuarios_registrados and isbn in self.libros_disponibles:
+            libro = self.libros_disponibles.pop(isbn)
+            self.historial_prestamos[user_id].append(libro)
+            print(f"Libro prestado: {libro} a usuario {user_id}")
+        else:
+            print("No se puede realizar el préstamo, verifique usuario e ISBN.")
+
+    def devolver_libro(self, user_id, isbn):
+        if user_id in self.historial_prestamos:
+            for libro in self.historial_prestamos[user_id]:
+                if libro.isbn == isbn:
+                    self.historial_prestamos[user_id].remove(libro)
+                    self.libros_disponibles[isbn] = libro
+                    print(f"Libro devuelto: {libro}")
+                    return
+            print("El usuario no tiene este libro en préstamo.")
+        else:
+            print("Usuario no encontrado.")
+
+    def buscar_libro(self, **criterios):
+        resultados = []
+        for libro in self.libros_disponibles.values():
+            if all(getattr(libro, key) == value for key, value in criterios.items()):
+                resultados.append(libro)
+        return resultados
+
+    def listar_libros_prestados(self, user_id):
+        if user_id in self.historial_prestamos:
+            libros = self.historial_prestamos[user_id]
+            if libros:
+                print("Libros prestados:")
+                for libro in libros:
+                    print(libro)
+            else:
+                print("El usuario no tiene libros prestados.")
+        else:
+            print("Usuario no encontrado.")
+
+
+# Pruebas del sistema
+biblioteca = Biblioteca()
+
+# Crear libros
+libro1 = Libro("1984", "George Orwell", "Ficción", "123456789")
+libro2 = Libro("Cien años de soledad", "Gabriel García Márquez", "Realismo Mágico", "987654321")
+
+# Agregar libros
+biblioteca.agregar_libro(libro1)
+biblioteca.agregar_libro(libro2)
+
+# Crear usuario
+usuario1 = Usuario("Carlos Pérez", "U001")
+biblioteca.registrar_usuario(usuario1)
+
+# Prestar libro
+biblioteca.prestar_libro("U001", "123456789")
+
+# Listar libros prestados
+biblioteca.listar_libros_prestados("U001")
+
+# Devolver libro
+biblioteca.devolver_libro("U001", "123456789")
+
+# Buscar libros disponibles
+resultado_busqueda = biblioteca.buscar_libro(categoria="Ficción")
+print("Libros encontrados:", resultado_busqueda)
